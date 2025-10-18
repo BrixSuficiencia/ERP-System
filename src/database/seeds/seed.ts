@@ -102,37 +102,40 @@ export class DatabaseSeeder {
   private async seedCustomers(users: User[]): Promise<Customer[]> {
     const customers = [
       {
-        userId: users[1].id, // John Doe
-        companyName: 'Doe Enterprises',
-        address: '123 Main St, New York, NY 10001',
-        city: 'New York',
-        state: 'NY',
-        zipCode: '10001',
-        country: 'USA',
+        firstName: 'John',
+        lastName: 'Doe',
+        email: users[1].email,
+        phone: users[1].phone,
+        company: 'Doe Enterprises',
+        defaultShippingAddress: '123 Main St, New York, NY 10001',
+        defaultBillingAddress: '123 Main St, New York, NY 10001',
         creditLimit: 10000,
         loyaltyPoints: 150,
+        isActive: true,
       },
       {
-        userId: users[2].id, // Jane Smith
-        companyName: 'Smith Corp',
-        address: '456 Oak Ave, Los Angeles, CA 90210',
-        city: 'Los Angeles',
-        state: 'CA',
-        zipCode: '90210',
-        country: 'USA',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: users[2].email,
+        phone: users[2].phone,
+        company: 'Smith Corp',
+        defaultShippingAddress: '456 Oak Ave, Los Angeles, CA 90210',
+        defaultBillingAddress: '456 Oak Ave, Los Angeles, CA 90210',
         creditLimit: 15000,
         loyaltyPoints: 250,
+        isActive: true,
       },
       {
-        userId: users[3].id, // Bob Wilson
-        companyName: 'Wilson Industries',
-        address: '789 Pine Rd, Chicago, IL 60601',
-        city: 'Chicago',
-        state: 'IL',
-        zipCode: '60601',
-        country: 'USA',
+        firstName: 'Bob',
+        lastName: 'Wilson',
+        email: users[3].email,
+        phone: users[3].phone,
+        company: 'Wilson Industries',
+        defaultShippingAddress: '789 Pine Rd, Chicago, IL 60601',
+        defaultBillingAddress: '789 Pine Rd, Chicago, IL 60601',
         creditLimit: 20000,
         loyaltyPoints: 100,
+        isActive: true,
       },
     ];
 
@@ -151,77 +154,37 @@ export class DatabaseSeeder {
     const products = [
       {
         name: 'Laptop Pro 15"',
-        description: 'High-performance laptop with 16GB RAM and 512GB SSD',
         sku: 'LAPTOP-PRO-15',
         price: 1299.99,
-        cost: 800.00,
-        category: 'Electronics',
-        brand: 'TechCorp',
-        stockQuantity: 50,
-        minStockLevel: 5,
-        maxStockLevel: 100,
-        weight: 2.5,
-        dimensions: '35x25x2 cm',
+        stock: 50,
         isActive: true,
       },
       {
         name: 'Wireless Mouse',
-        description: 'Ergonomic wireless mouse with USB receiver',
         sku: 'MOUSE-WIRELESS-001',
         price: 29.99,
-        cost: 15.00,
-        category: 'Accessories',
-        brand: 'TechCorp',
-        stockQuantity: 200,
-        minStockLevel: 20,
-        maxStockLevel: 500,
-        weight: 0.1,
-        dimensions: '12x6x4 cm',
+        stock: 200,
         isActive: true,
       },
       {
         name: 'Mechanical Keyboard',
-        description: 'RGB mechanical keyboard with Cherry MX switches',
         sku: 'KEYBOARD-MECH-001',
         price: 149.99,
-        cost: 75.00,
-        category: 'Accessories',
-        brand: 'TechCorp',
-        stockQuantity: 75,
-        minStockLevel: 10,
-        maxStockLevel: 150,
-        weight: 1.2,
-        dimensions: '45x15x3 cm',
+        stock: 75,
         isActive: true,
       },
       {
         name: 'Monitor 27" 4K',
-        description: '27-inch 4K UHD monitor with HDR support',
         sku: 'MONITOR-27-4K',
         price: 399.99,
-        cost: 250.00,
-        category: 'Electronics',
-        brand: 'DisplayCorp',
-        stockQuantity: 30,
-        minStockLevel: 3,
-        maxStockLevel: 60,
-        weight: 5.5,
-        dimensions: '62x37x5 cm',
+        stock: 30,
         isActive: true,
       },
       {
         name: 'Office Chair',
-        description: 'Ergonomic office chair with lumbar support',
         sku: 'CHAIR-OFFICE-001',
         price: 199.99,
-        cost: 120.00,
-        category: 'Furniture',
-        brand: 'ComfortCorp',
-        stockQuantity: 25,
-        minStockLevel: 5,
-        maxStockLevel: 50,
-        weight: 15.0,
-        dimensions: '60x60x120 cm',
+        stock: 25,
         isActive: true,
       },
     ];
@@ -238,9 +201,13 @@ export class DatabaseSeeder {
   }
 
   private async seedOrders(customers: Customer[], products: Product[]): Promise<Order[]> {
+    // Get users to map customer emails to user IDs
+    const userRepository = this.dataSource.getRepository(User);
+    const users = await userRepository.find();
+    
     const orders = [
       {
-        customerId: customers[0].id,
+        customerId: users.find(u => u.email === customers[0].email)?.id || 2,
         orderNumber: 'ORD-20241201-000001',
         status: OrderStatus.CONFIRMED,
         items: [
@@ -270,7 +237,7 @@ export class DatabaseSeeder {
         expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
       {
-        customerId: customers[1].id,
+        customerId: users.find(u => u.email === customers[1].email)?.id || 3,
         orderNumber: 'ORD-20241201-000002',
         status: OrderStatus.PENDING,
         items: [
@@ -300,7 +267,7 @@ export class DatabaseSeeder {
         expectedDeliveryDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
       },
       {
-        customerId: customers[2].id,
+        customerId: users.find(u => u.email === customers[2].email)?.id || 4,
         orderNumber: 'ORD-20241201-000003',
         status: OrderStatus.DELIVERED,
         items: [
@@ -329,18 +296,23 @@ export class DatabaseSeeder {
     const createdOrders: Order[] = [];
 
     for (const orderData of orders) {
-      const order = orderRepository.create(orderData);
-      createdOrders.push(await orderRepository.save(order));
+      const order = orderRepository.create(orderData as any);
+      const savedOrder = await orderRepository.save(order) as unknown as Order;
+      createdOrders.push(savedOrder);
     }
 
     return createdOrders;
   }
 
   private async seedPayments(orders: Order[], customers: Customer[]): Promise<Payment[]> {
+    // Get users to map customer emails to user IDs
+    const userRepository = this.dataSource.getRepository(User);
+    const users = await userRepository.find();
+    
     const payments = [
       {
         orderId: orders[0].id,
-        customerId: customers[0].userId,
+        customerId: users.find(u => u.email === customers[0].email)?.id || 1,
         amount: orders[0].finalAmount,
         currency: 'USD',
         paymentMethod: PaymentMethod.STRIPE,
@@ -350,7 +322,7 @@ export class DatabaseSeeder {
       },
       {
         orderId: orders[1].id,
-        customerId: customers[1].userId,
+        customerId: users.find(u => u.email === customers[1].email)?.id || 2,
         amount: orders[1].finalAmount,
         currency: 'USD',
         paymentMethod: PaymentMethod.PAYPAL,
@@ -359,7 +331,7 @@ export class DatabaseSeeder {
       },
       {
         orderId: orders[2].id,
-        customerId: customers[2].userId,
+        customerId: users.find(u => u.email === customers[2].email)?.id || 3,
         amount: orders[2].finalAmount,
         currency: 'USD',
         paymentMethod: PaymentMethod.STRIPE,
@@ -373,8 +345,9 @@ export class DatabaseSeeder {
     const createdPayments: Payment[] = [];
 
     for (const paymentData of payments) {
-      const payment = paymentRepository.create(paymentData);
-      createdPayments.push(await paymentRepository.save(payment));
+      const payment = paymentRepository.create(paymentData as any);
+      const savedPayment = await paymentRepository.save(payment) as unknown as Payment;
+      createdPayments.push(savedPayment);
     }
 
     return createdPayments;
