@@ -376,30 +376,3 @@ docker build -t erp-backend .
 
 # Run with Docker Compose
 docker-compose up -d
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🆘 Support
-
-For support and questions:
-- Create an issue in the repository
-- Contact the development team
-- Check the documentation
-
-## 🔄 Version History
-
-- **v1.0.0**: Initial release with core ERP functionality
-- **v1.1.0**: Added payment gateway integration
-- **v1.2.0**: Enhanced security and validation
-- **v1.3.0**: Added comprehensive documentation and testing
