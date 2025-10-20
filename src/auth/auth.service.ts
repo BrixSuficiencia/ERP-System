@@ -96,7 +96,7 @@ export class AuthService {
 
     // Generate JWT token
     const payload = { 
-      id: user.id, 
+      sub: user.id, 
       email: user.email, 
       role: user.role,
       name: user.name 
@@ -121,7 +121,7 @@ export class AuthService {
    * Validate JWT token and return user
    */
   async validateUser(payload: any): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id: payload.id } });
+    const user = await this.userRepository.findOne({ where: { id: payload.sub } });
     
     if (!user || !user.isActive) {
       throw new UnauthorizedException('User not found or inactive');

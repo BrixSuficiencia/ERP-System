@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Order } from '../orders/order.entity';
-import { Payment } from '../payments/payment.entity';
+import { Order, OrderStatus } from '../orders/order.entity';
+import { Payment, PaymentStatus } from '../payments/payment.entity';
 import { Product } from '../products/product.entity';
 import { Customer } from '../customers/customer.entity';
 import { User } from '../auth/user.entity';
@@ -143,10 +143,10 @@ export class DashboardService {
     // Order counts
     const totalOrders = await this.orderRepository.count();
     const pendingOrders = await this.orderRepository.count({ 
-      where: { status: 'PENDING' } 
+      where: { status: OrderStatus.PENDING } 
     });
     const completedOrders = await this.orderRepository.count({ 
-      where: { status: 'DELIVERED' } 
+      where: { status: OrderStatus.DELIVERED } 
     });
 
     const totalRevenue = parseFloat(totalRevenueResult.total) || 0;
@@ -259,16 +259,16 @@ export class DashboardService {
   }> {
     const totalPayments = await this.paymentRepository.count();
     const successfulPayments = await this.paymentRepository.count({ 
-      where: { status: 'COMPLETED' } 
+      where: { status: PaymentStatus.COMPLETED } 
     });
     const failedPayments = await this.paymentRepository.count({ 
-      where: { status: 'FAILED' } 
+      where: { status: PaymentStatus.FAILED } 
     });
     const pendingPayments = await this.paymentRepository.count({ 
-      where: { status: 'PENDING' } 
+      where: { status: PaymentStatus.PENDING } 
     });
     const totalRefunds = await this.paymentRepository.count({ 
-      where: { status: 'REFUNDED' } 
+      where: { status: PaymentStatus.REFUNDED } 
     });
 
     const successRate = totalPayments > 0 ? (successfulPayments / totalPayments) * 100 : 0;
@@ -428,7 +428,7 @@ export class DashboardService {
   }> {
     const totalPayments = await this.paymentRepository.count();
     const failedPayments = await this.paymentRepository.count({ 
-      where: { status: 'FAILED' } 
+      where: { status: PaymentStatus.FAILED } 
     });
 
     const failureRate = totalPayments > 0 ? (failedPayments / totalPayments) * 100 : 0;

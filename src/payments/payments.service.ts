@@ -95,7 +95,8 @@ export class PaymentsService {
 
     // Process payment based on method
     try {
-      await this.processPayment(savedPayment);
+      const processedPayment = await this.processPayment(savedPayment);
+      return processedPayment;
     } catch (error) {
       // Update payment status to failed
       savedPayment.status = PaymentStatus.FAILED;
@@ -184,23 +185,22 @@ export class PaymentsService {
   /**
    * Process payment based on payment method
    */
-  private async processPayment(payment: Payment): Promise<void> {
+  private async processPayment(payment: Payment): Promise<Payment> {
     switch (payment.paymentMethod) {
       case PaymentMethod.STRIPE:
-        await this.processStripePayment(payment);
-        break;
+        return await this.processStripePayment(payment);
       case PaymentMethod.PAYPAL:
         await this.processPayPalPayment(payment);
-        break;
+        return payment;
       case PaymentMethod.MAYA:
         await this.processMayaPayment(payment);
-        break;
+        return payment;
       case PaymentMethod.CASH:
         await this.processCashPayment(payment);
-        break;
+        return payment;
       case PaymentMethod.BANK_TRANSFER:
         await this.processBankTransferPayment(payment);
-        break;
+        return payment;
       default:
         throw new BadRequestException('Unsupported payment method');
     }
@@ -209,7 +209,7 @@ export class PaymentsService {
   /**
    * Process Stripe payment
    */
-  private async processStripePayment(payment: Payment): Promise<void> {
+  private async processStripePayment(payment: Payment): Promise<Payment> {
     try {
       payment.status = PaymentStatus.PROCESSING;
 

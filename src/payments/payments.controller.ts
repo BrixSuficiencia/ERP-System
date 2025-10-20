@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { PaymentStatus, PaymentMethod } from './payment.entity';
-import { JwtAuthGuard } from '../auth/jwt.strategy';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { UserRole } from '../auth/user.entity';

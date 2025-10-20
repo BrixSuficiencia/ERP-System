@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from '../common/dto/create-customer.dto';
-import { JwtAuthGuard } from '../auth/jwt.strategy';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { UserRole } from '../auth/user.entity';
@@ -37,11 +37,12 @@ export class CustomersController {
   @Roles(UserRole.ADMIN)
   async create(@Body() createCustomerDto: CreateCustomerDto) {
     // Convert date string to Date object if provided
-    if (createCustomerDto.dateOfBirth) {
-      createCustomerDto.dateOfBirth = new Date(createCustomerDto.dateOfBirth);
+    const processedDto: any = { ...createCustomerDto };
+    if (processedDto.dateOfBirth) {
+      processedDto.dateOfBirth = new Date(processedDto.dateOfBirth);
     }
 
-    return await this.customersService.create(createCustomerDto);
+    return await this.customersService.create(processedDto);
   }
 
   /**
@@ -132,11 +133,12 @@ export class CustomersController {
     }
 
     // Convert date string to Date object if provided
-    if (updateCustomerDto.dateOfBirth) {
-      updateCustomerDto.dateOfBirth = new Date(updateCustomerDto.dateOfBirth);
+    const processedDto: any = { ...updateCustomerDto };
+    if (processedDto.dateOfBirth) {
+      processedDto.dateOfBirth = new Date(processedDto.dateOfBirth);
     }
 
-    return await this.customersService.update(id, updateCustomerDto);
+    return await this.customersService.update(id, processedDto);
   }
 
   /**

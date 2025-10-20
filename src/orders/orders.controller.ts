@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { OrderStatus } from './order.entity';
-import { JwtAuthGuard } from '../auth/jwt.strategy';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { UserRole } from '../auth/user.entity';
@@ -128,11 +128,12 @@ export class OrdersController {
     }
 
     // Convert date string to Date object if provided
-    if (updateOrderDto.expectedDeliveryDate) {
-      updateOrderDto.expectedDeliveryDate = new Date(updateOrderDto.expectedDeliveryDate);
+    const processedDto: any = { ...updateOrderDto };
+    if (processedDto.expectedDeliveryDate) {
+      processedDto.expectedDeliveryDate = new Date(processedDto.expectedDeliveryDate);
     }
 
-    return await this.ordersService.update(id, updateOrderDto);
+    return await this.ordersService.update(id, processedDto);
   }
 
   /**
