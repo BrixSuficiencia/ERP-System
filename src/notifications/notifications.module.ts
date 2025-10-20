@@ -12,7 +12,7 @@ import { NotificationsController } from './notifications.controller';
 @Module({
   imports: [
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'jwt_secret',
+      secret: process.env.JWT_SECRET || 'your-super-secret-jwt-key-here-for-testing',
       signOptions: { expiresIn: '24h' },
     }),
   ],

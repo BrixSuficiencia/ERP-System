@@ -1,6 +1,20 @@
 # ERP Backend System
 
-A comprehensive Enterprise Resource Planning (ERP) backend system built with NestJS, TypeScript, and PostgreSQL. This system manages Products, Customers, Orders, and Payments with proper authentication, data integrity, and integration of third-party payment gateways.
+A comprehensive Enterprise Resource Planning (ERP) backend system built with NestJS, TypeScript, and PostgreSQL. This system provides a complete business management solution with user authentication, product catalog management, customer relationship management, order processing, and multi-gateway payment processing capabilities.
+
+## 📋 Program Description
+
+This ERP backend system is designed to handle the core business operations of an e-commerce or retail business. It provides:
+
+- **User Management**: Role-based authentication system with ADMIN and CUSTOMER roles
+- **Product Catalog**: Complete inventory management with stock tracking and SKU management
+- **Customer Management**: Comprehensive customer profiles with loyalty points and credit management
+- **Order Processing**: Full order lifecycle from creation to delivery with status tracking
+- **Payment Processing**: Multi-gateway payment support (Stripe, PayPal, Maya) with refund capabilities
+- **Business Analytics**: Real-time dashboard with sales analytics and business intelligence
+- **Real-time Notifications**: WebSocket-based live updates for order and payment status changes
+
+The system is built with enterprise-grade architecture, featuring secure authentication, comprehensive validation, and scalable database design.
 
 ## 🚀 Features
 
@@ -21,6 +35,46 @@ A comprehensive Enterprise Resource Planning (ERP) backend system built with Nes
 - **Real-time**: Socket.IO WebSocket connections for live notifications
 - **Analytics**: Comprehensive business intelligence and reporting
 - **Dashboard**: Real-time business metrics and insights
+
+## 🛠️ Tech Stack
+
+### Backend
+- **Framework**: NestJS (v11.0.1) - Enterprise-grade Node.js framework
+- **Language**: TypeScript (v5.7.3) - Type-safe JavaScript
+- **Runtime**: Node.js (v18+) - JavaScript runtime
+- **HTTP Server**: Express.js - HTTP server (via NestJS platform)
+
+### Database & ORM
+- **Database**: PostgreSQL (v12+) - Primary relational database
+- **ORM**: TypeORM (v0.3.27) - Object-Relational Mapping
+- **Driver**: pg (v8.16.3) - PostgreSQL driver
+- **Alternative**: SQLite3 (v5.1.7) - Development database
+
+### Authentication & Security
+- **JWT**: jsonwebtoken (v9.0.2) - JSON Web Tokens
+- **Passport**: passport (v0.7.0) + passport-jwt (v4.0.1) - Authentication middleware
+- **Hashing**: bcryptjs (v3.0.2) - Password hashing
+- **Validation**: class-validator (v0.14.2) + class-transformer (v0.5.1)
+
+### Payments
+- **Stripe**: stripe (v19.1.0) - Payment gateway integration
+- **PayPal**: Configured for PayPal integration
+- **Maya/PayMongo**: Philippine payment gateway support
+
+### Real-time Communication
+- **WebSockets**: Socket.IO - Real-time bidirectional communication
+- **NestJS WebSockets**: @nestjs/websockets (v11.1.6) + @nestjs/platform-socket.io (v11.1.6)
+
+### Development & Testing
+- **Testing**: Jest (v30.0.0) + Supertest (v7.0.0) + ts-jest (v29.2.5)
+- **Linting**: ESLint (v9.18.0) + Prettier (v3.4.2)
+- **CLI**: @nestjs/cli (v11.0.0) - NestJS command-line interface
+- **TypeScript**: ts-node (v10.9.2) + ts-loader (v9.5.2)
+
+### Configuration & Environment
+- **Config**: @nestjs/config (v4.0.2) - Configuration management
+- **Environment**: dotenv - Environment variable loading
+- **Containerization**: Docker + Docker Compose
 
 ## 📋 Prerequisites
 
@@ -178,9 +232,15 @@ The system supports multiple payment gateways:
 
 ## 🗄️ Database Schema
 
+### Entity Relationship Diagram (ERD)
+
+![ERD Diagram](docs/erd-diagram.png)
+
+*Place your ERD diagram in the `docs/` folder as `erd-diagram.png`*
+
 ### Core Entities
 - **Users**: Authentication and user management
-- **Customers**: Customer information and preferences
+- **Customers**: Customer information and preferences  
 - **Products**: Product catalog and inventory
 - **Orders**: Order management and tracking
 - **Payments**: Payment processing and history
@@ -190,6 +250,95 @@ The system supports multiple payment gateways:
 - Orders belong to one Customer
 - Orders can have multiple Payments
 - Products are referenced in Order items
+
+## 📝 Decisions, Assumptions, and Limitations
+
+### Architectural Decisions
+
+#### **1. Framework Choice: NestJS**
+- **Decision**: Chose NestJS over Express.js directly
+- **Rationale**: Enterprise-grade framework with built-in dependency injection, decorators, and modular architecture
+- **Benefits**: Better code organization, built-in validation, and TypeScript-first approach
+
+#### **2. Database Design: PostgreSQL + TypeORM**
+- **Decision**: PostgreSQL as primary database with TypeORM ORM
+- **Rationale**: PostgreSQL provides ACID compliance, JSON support, and excellent performance for complex queries
+- **Benefits**: TypeORM offers decorator-based entities, migrations, and query builder
+
+#### **3. Authentication: JWT with Role-Based Access**
+- **Decision**: JWT tokens with role-based access control (RBAC)
+- **Rationale**: Stateless authentication suitable for microservices and scalable applications
+- **Benefits**: No server-side session storage, easy to scale horizontally
+
+#### **4. Payment Integration: Multiple Gateways**
+- **Decision**: Support for Stripe, PayPal, and Maya payment gateways
+- **Rationale**: Different regions prefer different payment methods
+- **Benefits**: Global payment coverage and local payment method support
+
+### Key Assumptions
+
+#### **1. Business Model Assumptions**
+- **E-commerce Focus**: System designed for online retail/e-commerce businesses
+- **B2C Operations**: Primary focus on business-to-consumer transactions
+- **Multi-currency Support**: Assumption of international business operations
+- **Inventory Management**: Physical product inventory tracking required
+
+#### **2. Technical Assumptions**
+- **Node.js Environment**: Assumes Node.js runtime environment
+- **PostgreSQL Database**: Assumes PostgreSQL database availability
+- **RESTful API**: Assumes RESTful API consumption patterns
+- **Real-time Updates**: Assumes need for real-time notifications
+
+#### **3. User Behavior Assumptions**
+- **Role Separation**: Clear distinction between ADMIN and CUSTOMER roles
+- **Order Lifecycle**: Standard e-commerce order processing workflow
+- **Payment Preferences**: Users prefer multiple payment options
+
+### Current Limitations
+
+#### **1. Scalability Limitations**
+- **Single Database**: Currently uses single PostgreSQL instance
+- **No Caching**: No Redis or caching layer implemented
+- **File Storage**: No cloud storage integration for file uploads
+- **Load Balancing**: No load balancer configuration
+
+#### **2. Feature Limitations**
+- **No Multi-tenancy**: Single-tenant architecture
+- **Limited Analytics**: Basic dashboard analytics only
+- **No Advanced Reporting**: No complex reporting features
+- **No Email Integration**: No email service integration
+
+#### **3. Security Limitations**
+- **No Rate Limiting**: No API rate limiting implemented
+- **No Audit Logging**: No comprehensive audit trail
+- **No 2FA**: No two-factor authentication support
+- **No API Versioning**: No API versioning strategy
+
+#### **4. Integration Limitations**
+- **No Webhook System**: No webhook infrastructure for external integrations
+- **No Message Queue**: No message queue for async processing
+- **No File Processing**: No file upload/processing capabilities
+- **No External APIs**: Limited external service integrations
+
+### Future Improvements
+
+#### **1. Scalability Enhancements**
+- Implement Redis caching layer
+- Add database read replicas
+- Implement horizontal scaling
+- Add CDN integration
+
+#### **2. Feature Additions**
+- Multi-tenant architecture
+- Advanced analytics and reporting
+- Email notification system
+- File upload and management
+
+#### **3. Security Enhancements**
+- API rate limiting
+- Comprehensive audit logging
+- Two-factor authentication
+- API versioning strategy
 
 ## 🧪 Testing
 

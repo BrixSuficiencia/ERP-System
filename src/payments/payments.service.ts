@@ -438,4 +438,35 @@ export class PaymentsService {
   private canOrderBePaid(order: Order): boolean {
     return [OrderStatus.PENDING, OrderStatus.CONFIRMED].includes(order.status);
   }
+
+  /**
+   * Test Stripe connection
+   */
+  async testStripeConnection(): Promise<{
+    connected: boolean;
+    account?: any;
+    error?: string;
+  }> {
+    try {
+      // Test Stripe connection by retrieving account information
+      const account = await this.stripe.accounts.retrieve();
+      
+      return {
+        connected: true,
+        account: {
+          id: account.id,
+          type: account.type,
+          country: account.country,
+          email: account.email,
+          charges_enabled: account.charges_enabled,
+          payouts_enabled: account.payouts_enabled,
+        }
+      };
+    } catch (error) {
+      return {
+        connected: false,
+        error: error.message
+      };
+    }
+  }
 }

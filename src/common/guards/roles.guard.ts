@@ -18,8 +18,11 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
 
+    console.log('RolesGuard - Required roles:', requiredRoles);
+
     // If no roles are specified, allow access
     if (!requiredRoles) {
+      console.log('RolesGuard - No roles required, allowing access');
       return true;
     }
 
@@ -27,12 +30,17 @@ export class RolesGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
+    console.log('RolesGuard - User from request:', user ? { id: user.id, email: user.email, role: user.role } : 'null');
+
     // If no user is found, deny access
     if (!user) {
+      console.log('RolesGuard - No user found, denying access');
       return false;
     }
 
     // Check if the user has one of the required roles
-    return requiredRoles.some((role) => user.role === role);
+    const hasRequiredRole = requiredRoles.some((role) => user.role === role);
+    console.log('RolesGuard - User role:', user.role, 'Required roles:', requiredRoles, 'Has access:', hasRequiredRole);
+    return hasRequiredRole;
   }
 }

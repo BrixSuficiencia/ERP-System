@@ -151,4 +151,15 @@ export class PaymentsController {
       }
     };
   }
+
+  /**
+   * Test Stripe connection
+   * GET /payments/test/stripe
+   */
+  @Get('test/stripe')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async testStripeConnection() {
+    return await this.paymentsService.testStripeConnection();
+  }
 }

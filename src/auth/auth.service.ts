@@ -102,7 +102,9 @@ export class AuthService {
       name: user.name 
     };
 
-    const secretKey = process.env.JWT_SECRET || 'jwt_secret';
+    const secretKey = process.env.JWT_SECRET || 'your-super-secret-jwt-key-here-for-testing';
+    console.log('AuthService - JWT_SECRET from env:', process.env.JWT_SECRET);
+    console.log('AuthService - Using secret key:', secretKey);
     const expiresIn = 24 * 60 * 60; // 24 hours in seconds
 
     const token = jwt.sign(payload, secretKey, { expiresIn });

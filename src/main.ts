@@ -7,6 +7,8 @@ import { AppModule } from './app.module';
  * Configures global validation, CORS, and other middleware
  */
 async function bootstrap() {
+  console.log('Bootstrap - JWT_SECRET from env:', process.env.JWT_SECRET);
+  console.log('Bootstrap - All env vars:', Object.keys(process.env).filter(key => key.includes('JWT')));
   const app = await NestFactory.create(AppModule);
   
   // Enable CORS for frontend integration
