@@ -236,8 +236,6 @@ The system supports multiple payment gateways:
 
 ![ERD Diagram](docs/erd-diagram.png)
 
-*Place your ERD diagram in the `docs/` folder as `erd-diagram.png`*
-
 ### Core Entities
 - **Users**: Authentication and user management
 - **Customers**: Customer information and preferences  
