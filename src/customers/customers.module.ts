@@ -2,17 +2,16 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CustomersController } from './customers.controller';
 import { CustomersService } from './customers.service';
-import { Customer } from './customer.entity';
+import { User } from '../auth/user.entity';
 
 /**
- * Customer Module
- * Manages customer-related functionality
- * Includes customer CRUD operations and business logic
+ * Customers Module
+ * Handles customer-related operations (CRUD, analytics, etc.)
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([Customer])],
+  imports: [TypeOrmModule.forFeature([User])],
   controllers: [CustomersController],
   providers: [CustomersService],
-  exports: [CustomersService], // Export service for use in other modules
+  exports: [CustomersService],
 })
 export class CustomersModule {}

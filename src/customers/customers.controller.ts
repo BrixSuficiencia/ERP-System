@@ -142,34 +142,6 @@ export class CustomersController {
   }
 
   /**
-   * Update customer balance
-   * PUT /customers/:id/balance
-   */
-  @Put(':id/balance')
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async updateBalance(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateBalanceDto: { amount: number }
-  ) {
-    return await this.customersService.updateBalance(id, updateBalanceDto.amount);
-  }
-
-  /**
-   * Add loyalty points
-   * POST /customers/:id/loyalty-points
-   */
-  @Post(':id/loyalty-points')
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async addLoyaltyPoints(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() loyaltyPointsDto: { points: number }
-  ) {
-    return await this.customersService.addLoyaltyPoints(id, loyaltyPointsDto.points);
-  }
-
-  /**
    * Deactivate customer
    * PUT /customers/:id/deactivate
    */

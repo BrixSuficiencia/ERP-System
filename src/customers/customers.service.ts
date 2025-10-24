@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Customer } from './customer.entity';
+import { User } from '../auth/user.entity';
 
 /**
  * Customer Service
@@ -11,8 +11,8 @@ import { Customer } from './customer.entity';
 @Injectable()
 export class CustomersService {
   constructor(
-    @InjectRepository(Customer)
-    private customerRepository: Repository<Customer>,
+    @InjectRepository(User)
+    private customerRepository: Repository<User>,
   ) {}
 
   /**
@@ -33,10 +33,9 @@ export class CustomersService {
     timezone?: string;
     creditLimit?: number;
     isActive?: boolean;
-    isVip?: boolean;
     preferredPaymentMethod?: string;
     notes?: string;
-  }): Promise<Customer> {
+  }): Promise<User> {
     // Check if customer with email already exists
     const existingCustomer = await this.customerRepository.findOne({
       where: { email: createCustomerDto.email }
@@ -55,20 +54,18 @@ export class CustomersService {
    */
   async findAll(filters?: {
     isActive?: boolean;
-    isVip?: boolean;
     company?: string;
     search?: string;
     limit?: number;
     offset?: number;
-  }): Promise<{ customers: Customer[]; total: number }> {
-    const query = this.customerRepository.createQueryBuilder('customer');
+  }): Promise<{ customers: User[]; total: number }> {
+    const query = this.customerRepository.createQueryBuilder('Customer');
+
+    // ✅ Only include users with the "customer" role
+    query.where('customer.role = :role', { role: 'CUSTOMER' });
 
     if (filters?.isActive !== undefined) {
       query.andWhere('customer.isActive = :isActive', { isActive: filters.isActive });
-    }
-
-    if (filters?.isVip !== undefined) {
-      query.andWhere('customer.isVip = :isVip', { isVip: filters.isVip });
     }
 
     if (filters?.company) {
@@ -102,7 +99,7 @@ export class CustomersService {
   /**
    * Get a single customer by ID
    */
-  async findOne(id: number): Promise<Customer> {
+  async findOne(id: number): Promise<User> {
     const customer = await this.customerRepository.findOne({
       where: { id },
       relations: ['orders'],
@@ -118,7 +115,7 @@ export class CustomersService {
   /**
    * Get customer by email
    */
-  async findByEmail(email: string): Promise<Customer> {
+  async findByEmail(email: string): Promise<User> {
     const customer = await this.customerRepository.findOne({
       where: { email },
     });
@@ -148,10 +145,9 @@ export class CustomersService {
     timezone?: string;
     creditLimit?: number;
     isActive?: boolean;
-    isVip?: boolean;
     preferredPaymentMethod?: string;
     notes?: string;
-  }): Promise<Customer> {
+  }): Promise<User> {
     const customer = await this.findOne(id);
 
     // Check if email is being changed and if it already exists
@@ -170,27 +166,9 @@ export class CustomersService {
   }
 
   /**
-   * Update customer balance
-   */
-  async updateBalance(id: number, amount: number): Promise<Customer> {
-    const customer = await this.findOne(id);
-    customer.currentBalance += amount;
-    return await this.customerRepository.save(customer);
-  }
-
-  /**
-   * Add loyalty points
-   */
-  async addLoyaltyPoints(id: number, points: number): Promise<Customer> {
-    const customer = await this.findOne(id);
-    customer.loyaltyPoints += points;
-    return await this.customerRepository.save(customer);
-  }
-
-  /**
    * Deactivate customer
    */
-  async deactivate(id: number): Promise<Customer> {
+  async deactivate(id: number): Promise<User> {
     const customer = await this.findOne(id);
     customer.isActive = false;
     return await this.customerRepository.save(customer);
@@ -199,7 +177,7 @@ export class CustomersService {
   /**
    * Activate customer
    */
-  async activate(id: number): Promise<Customer> {
+  async activate(id: number): Promise<User> {
     const customer = await this.findOne(id);
     customer.isActive = true;
     return await this.customerRepository.save(customer);
@@ -220,7 +198,6 @@ export class CustomersService {
   async getStatistics(): Promise<{
     totalCustomers: number;
     activeCustomers: number;
-    vipCustomers: number;
     averageOrderValue: number;
     totalRevenue: number;
   }> {
@@ -228,10 +205,6 @@ export class CustomersService {
     
     const activeCustomers = await this.customerRepository.count({
       where: { isActive: true }
-    });
-
-    const vipCustomers = await this.customerRepository.count({
-      where: { isVip: true }
     });
 
     // Calculate average order value and total revenue
@@ -256,7 +229,6 @@ export class CustomersService {
     return {
       totalCustomers,
       activeCustomers,
-      vipCustomers,
       averageOrderValue: avgOrderValue,
       totalRevenue,
     };
