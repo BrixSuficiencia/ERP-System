@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order, OrderStatus } from './order.entity';
 import { Product } from '../products/product.entity';
-import { Customer } from '../customers/customer.entity';
+import { User, UserRole } from '../auth/user.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 
 /**
@@ -18,8 +18,8 @@ export class OrdersService {
     private orderRepository: Repository<Order>,
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
-    @InjectRepository(Customer)
-    private customerRepository: Repository<Customer>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     private notificationsService: NotificationsService,
   ) {}
 
@@ -37,7 +37,7 @@ export class OrdersService {
     const { customerId, items, shippingAddress, billingAddress, notes } = createOrderDto;
 
     // Validate customer exists
-    const customer = await this.customerRepository.findOne({ where: { id: customerId } });
+    const customer = await this.userRepository.findOne({ where: { id: customerId, role: UserRole.CUSTOMER } });
     if (!customer) {
       throw new NotFoundException('Customer not found');
     }
@@ -84,7 +84,7 @@ export class OrdersService {
         orderNumber: savedOrder.orderNumber,
         totalAmount: savedOrder.finalAmount,
         items: savedOrder.items,
-        customerName: customer.firstName + ' ' + customer.lastName,
+        customerName: customer.name,
       }
     );
 

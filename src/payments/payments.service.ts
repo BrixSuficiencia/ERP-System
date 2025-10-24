@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Payment, PaymentStatus, PaymentMethod } from './payment.entity';
 import { Order, OrderStatus } from '../orders/order.entity';
-import { Customer } from '../customers/customer.entity';
+import { User, UserRole } from '../auth/user.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 import Stripe from 'stripe';
 
@@ -21,8 +21,8 @@ export class PaymentsService {
     private paymentRepository: Repository<Payment>,
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
-    @InjectRepository(Customer)
-    private customerRepository: Repository<Customer>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     private notificationsService: NotificationsService,
   ) {
     // Initialize Stripe with secret key from environment
@@ -56,7 +56,7 @@ export class PaymentsService {
     }
 
     // Validate customer
-    const customer = await this.customerRepository.findOne({ where: { id: customerId } });
+    const customer = await this.userRepository.findOne({ where: { id: customerId } });
     if (!customer) {
       throw new NotFoundException('Customer not found');
     }
@@ -79,6 +79,19 @@ export class PaymentsService {
     if (totalPaid + amount > parseFloat(order.finalAmount.toString())) {
       throw new BadRequestException('Payment amount exceeds remaining order balance');
     }
+
+    // Validate full payment matches order amount (for single-payment logic)
+    const remainingBalance = parseFloat(order.finalAmount.toString()) - totalPaid;
+    
+    console.log('Final amount:', order.finalAmount);
+    console.log('Total paid so far:', totalPaid);
+    console.log('Remaining balance (computed):', remainingBalance);
+
+    if (amount < remainingBalance) {
+      throw new BadRequestException(
+        `Payment amount ($${amount}) does not cover remaining balance ($${remainingBalance}).`);
+    }
+
 
     // Create payment record
     const payment = this.paymentRepository.create({

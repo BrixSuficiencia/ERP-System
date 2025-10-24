@@ -36,14 +36,14 @@ export class DashboardController {
    * GET /dashboard/sales-by-product?startDate=2024-01-01&endDate=2024-12-31
    */
   @Get('sales-by-product')
-  async getSalesByProduct(
+  async getSalesAnalytics(
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string
   ) {
     const start = startDate ? new Date(startDate) : undefined;
     const end = endDate ? new Date(endDate) : undefined;
-    
-    return await this.dashboardService.getSalesByProduct(start, end);
+    return await this.dashboardService.getSalesAnalytics();
+
   }
 
   /**

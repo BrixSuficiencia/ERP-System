@@ -4,7 +4,7 @@ import { PaymentsController } from './payments.controller';
 import { PaymentsService } from './payments.service';
 import { Payment } from './payment.entity';
 import { Order } from '../orders/order.entity';
-import { Customer } from '../customers/customer.entity';
+import { User } from '../auth/user.entity';
 import { NotificationsModule } from '../notifications/notifications.module';
 
 /**
@@ -14,7 +14,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Payment, Order, Customer]),
+    TypeOrmModule.forFeature([Payment, Order, User]),
     NotificationsModule
   ],
   controllers: [PaymentsController],

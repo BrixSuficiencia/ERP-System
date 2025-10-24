@@ -128,7 +128,7 @@ export class PaymentsController {
     return {
       methods: Object.values(PaymentMethod),
       supportedCurrencies: ['USD', 'EUR', 'PHP', 'GBP', 'CAD'],
-      defaultCurrency: 'USD'
+      defaultCurrency: 'PHP',
     };
   }
 
