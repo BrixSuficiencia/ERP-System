@@ -76,6 +76,11 @@ export class OrdersService {
 
     const savedOrder = await this.orderRepository.save(order);
 
+    // After order is successfully created
+    for (const item of processedItems) {
+      await this.productRepository.decrement({ id: item.productId }, 'stock', item.quantity);
+    }
+
     // Send notification to admins about new order
     await this.notificationsService.notifyNewOrder(
       savedOrder.id,
